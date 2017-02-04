@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputExceededException;
 
 /**
  * Tests Throttling of GetItem requests
@@ -30,10 +31,13 @@ class ThrottleRead implements Runnable {
                 System.out.println("("+Thread.currentThread().getName()+ ")\tItem = " + item );
                 stats.incrementSuccessFulRequestCount();
 
-            }catch (Exception e) {
-                System.out.println("("+Thread.currentThread().getName()+ ")\tException occurred, exception = " + e.getMessage());
+            } catch (ProvisionedThroughputExceededException pte) {
                 stats.incrementThrottledRequestCount();
+                System.out.println("(" + Thread.currentThread().getName() + ")\tProvisionedThroughputExceededException occurred, exception = " + pte.getMessage());
+            } catch (Exception e) {
+                stats.incrementExceptionsCount();
+                System.out.println("(" + Thread.currentThread().getName() + ")\tException occurred, exception = " + e.getMessage());
             }
-            System.out.println("("+Thread.currentThread().getName()+ ") Successful Count = "+stats.getSuccessFulRequestsCount() + "\tThrottled Count = "+stats.getThrottledRequestsCount());
+        System.out.println("(" + Thread.currentThread().getName() + ") Successful Count = " + stats.getSuccessFulRequestsCount() + "\tThrottled Count = " + stats.getThrottledRequestsCount() + "\tException Count = " + stats.getExceptionsCount());
     }
 }

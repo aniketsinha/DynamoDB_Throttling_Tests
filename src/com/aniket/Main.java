@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
 	    Stats stats = new Stats();
-        int numberOfThreads = 5;
+        int numberOfThreads = 1200;
         AWSCredentials awsCredentials = TestsUtil.getAwsCredentials();
         for(int i=0; i<numberOfThreads;i++) {
             Thread readThread = new Thread(new ThrottleRead(awsCredentials,stats));
